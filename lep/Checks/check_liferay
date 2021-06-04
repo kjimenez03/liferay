@@ -1,0 +1,65 @@
+#!/bin/sh
+# Elias Torres-Arroyo, Randall Chacon 
+# https://infosgroup.cr
+
+# Requisites:
+# * logger(1)
+# * mailx(1) See: heirloom-mailx
+# service(1)
+
+
+
+
+#Path de Liferay con Tomcat
+#LIFERAY_PATH="/opt/liferay-ce-portal-7.2.0-ga1/tomcat-9.0.17/"
+LIFERAY_PATH="$1"
+
+#Nombre de Usuario encargado de levantar liferay-ce-portal-7
+#LIFERAY_USR="enersol_costarica"
+LIFERAY_USR="$2"
+
+SERVICE="$3"
+SERVICE_LOG="$4"
+MAIL_FROM="$5"
+MAIL_TO="${6:-root}"
+SERVICE_LOG_LINES="${7:-99}"
+if [ x$5 = "x-v" ]; then _logger_opts="-s"; fi
+
+_log()   { logger $_logger_opts -i -t `basename $0` -- "$1"; }
+_die()   { /bin/echo -e "$1" >&2 ; exit 1; }
+_usage() { _die "$1 Usage: $0 some-service lof-file-path [email@example.net] [n-log-lines] [-v]"; }
+
+[ -z "$SERVICE" ] && _usage
+##[ -x "/etc/init.d/$SERVICE" ] || _die "/etc/init.d/$SERVICE does not exist."
+[ -f "$SERVICE_LOG" ] || _usage "Error: $SERVICE_LOG does not exist or is not readable.\n"
+
+[ "$SERVICE_LOG_LINES" -gt 0 ] || _usage "Error: n-log-lines should be a number greater than 0.\n"
+
+_log "Checking if $SERVICE is running, curl. http://localhost:8080..."
+
+curl -s http://localhost:8080/  > /dev/null 2>&1
+if [ "$?" -eq "0" ]
+then
+  _log "Service $SERVICE is running."
+else
+  _log "Service $SERVICE is DOWN, restarting..."
+  if test -f "$SERVICE_LOG"; then
+	cp $SERVICE_LOG /var/log/liferay/saved
+    LOG_LINES=`tail -n $SERVICE_LOG_LINES $SERVICE_LOG`
+    _log "Sending mail with last $SERVICE_LOG_LINES lines of file $SERVICE_LOG to $MAIL_TO"
+    /bin/echo -e "Service $SERVICE was DOWN at server `hostname -f`\nLast $SERVICE_LOG_LINES lines of file $SERVICE_LOG:\n\n$LOG_LINES" | mailx  -r $MAIL_FROM -s "Service $SERVICE was DOWN, see log here." $MAIL_TO
+	
+  fi
+  _log "Service $SERVICE before restarting..."
+  sudo -u webmaster $LIFERAY_PATH/bin/shutdown.sh
+  sleep 90
+  #service $SERVICE restart
+  sudo -u webmaster $LIFERAY_PATH/bin/startup.sh
+  _log "Service $SERVICE after restarting..."
+
+  #sudo -u webmaster /Liferay/liferay-portal-6.2-ce-ga6/tomcat-7.0.62/bin/shutdown.sh
+  #sleep 30
+  #sudo -u webmaster /Liferay/liferay-portal-6.2-ce-ga6/tomcat-7.0.62/bin/startup.sh
+  #sudo -u webmaster  cp /home/webmaster/respaldos/dockbar/*.* /Liferay/liferay-portal-6.2-ce-ga6/tomcat-7.0.62/webapps/ROOT/html/portlet/dockbar/
+fi
+

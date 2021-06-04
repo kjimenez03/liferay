@@ -1,0 +1,43 @@
+#!/bin/sh
+# Elias Torres-Arroyo, Randall Chacon
+# Modified By: Kjimenez 
+# https://infosgroup.cr
+
+# Requisites:
+# * logger(1)
+# * mailx(1) See: heirloom-mailx
+# service(1)
+
+SERVICE="$1"
+SERVICE_LOG=ls -t /var/log/elasticsearch/ | head -n 1
+SERVICE_LOG_LINES="${2:-99}"
+if [ x$5 = "x-v" ]; then _logger_opts="-s"; fi
+
+_log()   { logger $_logger_opts -i -t `basename $0` -- "$1"; }
+_die()   { /bin/echo -e "$1" >&2 ; exit 1; }
+_usage() { _die "$1 Usage: $0 some-service lof-file-path [email@example.net] [n-log-lines] [-v]"; }
+
+[ -z "$SERVICE" ] && _usage
+##[ -x "/etc/init.d/$SERVICE" ] || _die "/etc/init.d/$SERVICE does not exist."
+[ -f "$SERVICE_LOG" ] || _usage "Error: $SERVICE_LOG does not exist or is not readable.\n"
+
+[ "$SERVICE_LOG_LINES" -gt 0 ] || _usage "Error: n-log-lines should be a number greater than 0.\n"
+
+_log "Checking if $SERVICE is running, http://localhost:9200/_cluster/health?pretty"
+
+curl -s http://localhost:9200/_cluster/health?pretty  > /dev/null 2>&1 
+if [ "$?" -eq "0" ]
+then
+  _log "Service $SERVICE is running."
+else
+  _log "Service $SERVICE is DOWN, restarting..."
+
+  _log "Service $SERVICE before restarting..."
+
+  #service $SERVICE restart
+  sudo systemctl restart elasticsearch
+  
+  _log "Service $SERVICE after restarting..."
+
+fi
+

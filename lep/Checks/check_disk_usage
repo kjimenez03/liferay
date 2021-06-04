@@ -1,0 +1,45 @@
+# Script para verificación de porcentaje de uso disco duro
+# Notificación para cuando el disco supera x porcentaje de uso
+#
+# bin/bash
+# Kjimenez
+# Infosgroup CR
+
+#Recibo de Parámetro
+MAIL_FROM="$1"     # Correo desde el cuál enviar el correo
+MAIL_TO="$2"       # Correos a quien enviar las notificaciones
+PROJECT="$3"	   # Nombre del proyecto donde se está ejecutando el script
+threshold="$4"     # Porcentaje máximo de uso para notificar
+
+
+# Cantidad de discos que superen la cantidad de porcentaje a mostrar
+i=3
+
+# Obtiene un array de los resultados de la consulta del comando df -kh
+# awk procesa texto
+# sed evalua y verifica regex
+result=`df -kh |grep -v "Filesystem" | awk '{ print $5 }' | sed 's/%//g'`
+
+# recorre los resultados obtenidos
+for percent in $result; do
+
+# Evalua si el porcentaje de uso de los discos evaluados es mayor al máximo de notificación
+if ((percent > threshold))
+then
+
+partition=`df -kh | head -$i | tail -1| awk '{print $1}'`
+
+# Hace log del mensaje de notificación
+ _log "Sending mail with threshold use of disk usage to $MAIL_TO"
+
+# Envía el correo con el mensaje de notificación
+/bin/echo -e "Disk usage of $partition has reach or surpase $threshold percent of usage | mailx  -r $MAIL_FROM -s "$PROJECT : Disk $partition is at ${percent}%" $MAIL_TO
+
+
+fi
+
+let i=$i+1
+
+done
+
+
