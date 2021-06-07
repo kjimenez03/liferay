@@ -84,7 +84,7 @@ COPY lep/Configs/context.xml /opt/liferay-portal-7.3.6-ce-ga7/tomcat-9.0.40/conf
 ###################################
 # Porlet Installation
 ###################################
-COPY lep/Portlets/. /var/liferay-home/deploy/
+#COPY lep/Portlets/. /var/liferay-home/deploy/
 
 
 ###################################
