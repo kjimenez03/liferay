@@ -93,7 +93,7 @@ COPY lep/Configs/context.xml /opt/liferay-ce-portal-7.3.6-ga7/tomcat-9.0.40/conf
 COPY lep/Misc/Connectors/. /opt/liferay-ce-portal-7.3.6-ga7/tomcat-9.0.40/lib/ext/
 
 # volumes
-VOLUME ["/var/liferay-home", "/opt/liferay-ce-portal-7.3.6-ga7/"]
+#VOLUME ["/var/liferay-home", "/opt/liferay-ce-portal-7.3.6-ga7/"]
 
 # Ports
 EXPOSE 8080
