@@ -46,15 +46,15 @@ RUN curl -O -s -k -L -C - https://github.com/liferay/liferay-portal/releases/dow
 ###################################
 
 # add config for bdd
-#RUN /bin/echo -e '\nCATALINA_OPTS="$CATALINA_OPTS -Dexternal-properties=portal-bd-MYSQL.properties"' >> /opt/liferay-portal-7.3.6-ce-ga7/tomcat-9.0.40/bin/setenv.sh
+#RUN /bin/echo -e '\nCATALINA_OPTS="$CATALINA_OPTS -Dexternal-properties=portal-bd-MYSQL.properties"' >> /opt/liferay-ce-portal-7.3.6-ga7/tomcat-9.0.40/bin/setenv.sh
 
 ###################################
 # ADD LIFERAY CONFIGS
 ###################################
-COPY lep/Configs/portal-ext.properties /opt/liferay-portal-7.3.6-ce-ga7/portal-ext.properties
-COPY lep/Configs/portal-bundle.properties /opt/liferay-portal-7.3.6-ce-ga7/portal-bundle.properties
-#COPY lep/Configs/portal-bd-MYSQL.properties /opt/liferay-portal-7.3.6-ce-ga7/portal-bd-MYSQL.properties
-COPY lep/Configs/logging.properties /opt/liferay-portal-7.3.6-ce-ga7/tomcat-9.0.40/conf/logging.properties
+COPY lep/Configs/portal-ext.properties /opt/liferay-ce-portal-7.3.6-ga7/portal-ext.properties
+COPY lep/Configs/portal-bundle.properties /opt/liferay-ce-portal-7.3.6-ga7/portal-bundle.properties
+#COPY lep/Configs/portal-bd-MYSQL.properties /opt/liferay-ce-portal-7.3.6-ga7/portal-bd-MYSQL.properties
+COPY lep/Configs/logging.properties /opt/liferay-ce-portal-7.3.6-ga7/tomcat-9.0.40/conf/logging.properties
 
 ###################################
 # ADD HEALTH CHECKS
@@ -66,7 +66,7 @@ COPY lep/Checks/. /usr/local/sbin/
 # ADD CRONTAB FOR CHECKS
 ###################################
 
-RUN /bin/echo -e '*/10 * * * * root /usr/local/sbin/check_liferay /opt/liferay-portal-7.3.6-ce-ga7/tomcat-9.0.40/ root  liferay-portal /opt/liferay-portal-7.3.6-ce-ga7/tomcat-9.0.40/logs/catalina.out no-responder@infosgroup.cr rchacon@infosgroup.cr,lsanabria@infosgroup.cr,kjimenez@infosgroup.cr  300' >> /etc/crontab
+RUN /bin/echo -e '*/10 * * * * root /usr/local/sbin/check_liferay /opt/liferay-ce-portal-7.3.6-ga7/tomcat-9.0.40/ root  liferay-portal /opt/liferay-ce-portal-7.3.6-ga7/tomcat-9.0.40/logs/catalina.out no-responder@infosgroup.cr rchacon@infosgroup.cr,lsanabria@infosgroup.cr,kjimenez@infosgroup.cr  300' >> /etc/crontab
 RUN /bin/echo -e '*/1440 * * * * root /usr/local/sbin/check_disk_usage no-responder@infosgroup.cr rchacon@infosgroup.cr,lsanabria@infosgroup.cr,kjimenez@infosgroup.cr 90' >> /etc/crontab
 
 ###################################
@@ -77,8 +77,8 @@ RUN service cron reload
 ###################################
 # ADD TOMCAT CONFIGS
 ###################################
-#COPY lep/Configs/setenv.sh /opt/liferay-portal-7.3.6-ce-ga7/tomcat-9.0.40/bin/setenv.sh
-COPY lep/Configs/context.xml /opt/liferay-portal-7.3.6-ce-ga7/tomcat-9.0.40/conf/context.xml
+#COPY lep/Configs/setenv.sh /opt/liferay-ce-portal-7.3.6-ga7/tomcat-9.0.40/bin/setenv.sh
+COPY lep/Configs/context.xml /opt/liferay-ce-portal-7.3.6-ga7/tomcat-9.0.40/conf/context.xml
 
 
 ###################################
@@ -90,14 +90,14 @@ COPY lep/Configs/context.xml /opt/liferay-portal-7.3.6-ce-ga7/tomcat-9.0.40/conf
 ###################################
 # ADD DATABASES CONNECTOR(JARS)
 ###################################
-COPY lep/Misc/Connectors/. /opt/liferay-portal-7.3.6-ce-ga7/tomcat-9.0.40/lib/ext/
+COPY lep/Misc/Connectors/. /opt/liferay-ce-portal-7.3.6-ga7/tomcat-9.0.40/lib/ext/
 
 # volumes
-VOLUME ["/var/liferay-home", "/opt/liferay-portal-7.3.6-ce-ga7/"]
+VOLUME ["/var/liferay-home", "/opt/liferay-ce-portal-7.3.6-ga7/"]
 
 # Ports
 EXPOSE 8080
 
 # EXEC
 CMD ["run"]
-ENTRYPOINT ["/opt/liferay-portal-7.3.6-ce-ga7/tomcat-9.0.40/bin/catalina.sh"]
+ENTRYPOINT ["/opt/liferay-ce-portal-7.3.6-ga7/tomcat-9.0.40/bin/catalina.sh"]
