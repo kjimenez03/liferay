@@ -10,7 +10,7 @@ MAINTAINER Kevin Jiménez <kjimenez@infosgroup.cr>
 ########################################################################
 RUN apt-get update
 RUN apt-get install -y curl tar unzip 
-#RUN apt-get install -y curl tar nano 
+RUN apt-get install -y curl tar nano 
 RUN apt-get install -y curl tar wget 
 RUN apt-get install -y curl tar mailutils
 
@@ -78,7 +78,7 @@ RUN service cron reload
 # ADD TOMCAT CONFIGS
 ###################################
 #COPY lep/Configs/setenv.sh /opt/liferay-ce-portal-7.3.6-ga7/tomcat-9.0.40/bin/setenv.sh
-COPY lep/Configs/context.xml /opt/liferay-ce-portal-7.3.6-ga7/tomcat-9.0.40/conf/context.xml
+#COPY lep/Configs/context.xml /opt/liferay-ce-portal-7.3.6-ga7/tomcat-9.0.40/conf/context.xml
 
 
 ###################################
