@@ -90,7 +90,7 @@ RUN service cron reload
 ###################################
 # ADD DATABASES CONNECTOR(JARS)
 ###################################
-COPY lep/Misc/Connectors/. /opt/liferay-ce-portal-7.3.6-ga7/tomcat-9.0.40/lib/ext/
+#COPY lep/Misc/Connectors/. /opt/liferay-ce-portal-7.3.6-ga7/tomcat-9.0.40/lib/ext/
 
 # volumes
 #VOLUME ["/var/liferay-home", "/opt/liferay-ce-portal-7.3.6-ga7/"]
